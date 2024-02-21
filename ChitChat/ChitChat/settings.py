@@ -75,8 +75,12 @@ WSGI_APPLICATION = 'ChitChat.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'djongo',
+        'NAME': 'chitchat_db',
+        'ENFORCE_SCHEMA': False,
+        'CLIENT': {
+           'host': 'mongodb+srv://coltvnguyen:Legitpassword12@chitchat-cluster-1.gjvrsgz.mongodb.net/?retryWrites=true&w=majority'
+        }
     }
 }
 
