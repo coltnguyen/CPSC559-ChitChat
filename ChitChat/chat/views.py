@@ -4,4 +4,4 @@ from django.http import HttpResponse
 
 # Create your views here.
 def chat(request):
-    return HttpResponse("Hello world!")
+    return render(request, 'chat/chatroom.html')
