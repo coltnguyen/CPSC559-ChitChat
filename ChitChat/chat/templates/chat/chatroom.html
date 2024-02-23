@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Chat Page</title>
+    {% load static %}
+	<link rel="stylesheet" type="text/css" href="{% static 'chat/CPStyles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <div class="chat-container">
+	    <section class="chat-messages" id="msgBox">
+			<!-- Chat messages will be inserted here -->
+        </section>
+		<div class="chat-input">
+			<input type="text" id="myMsg" placeholder="Enter your message" style="color:white;" required>
+            <button class="fas fa-chevron-right" onclick="displayMsg()"></button>
+            <p class="output"></p>
+            <div id="timestamp" class="timestamp"></div>
+            <script>
+                function displayMsg() {
+                    const input = document.querySelector("#myMsg");
+                    const output = document.querySelector("#msgBox");
+                    const newMsg = document.createElement("p");
+                    const time = document.createElement("p");
+
+                    if (input.value.trim() === "") {
+                        alert("Please enter a message before sending");
+                        return;
+                    }
+
+                    const now = new Date();
+                    const timeString = now.toLocaleTimeString();
+                    time.textContent = timeString;
+                    time.classList.add("timestamp")
+
+                    newMsg.textContent = input.value;
+                    newMsg.classList.add("chat-bubble")
+                    output.appendChild(newMsg);
+                    output.appendChild(time);
+                    input.value = ""; // Clear the input field
+                }
+            </script>
+		</div>
+	</div>
+</body>
+</html>
