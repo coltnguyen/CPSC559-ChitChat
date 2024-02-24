@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-from .models import User
-from .serializers import UserSerializer
+from .models import User, Chatroom, Message
+from .serializers import UserSerializer, MessageSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -16,11 +16,24 @@ from rest_framework import status
 # def chat(request):
 #     return render(request, 'chat/chatroom.html')
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 def messages(request, room_name):
-    # if the cr exists: find and return all messages
-    # else: return 404 does not exist to indicate cr not found
-    return Response(status=status.HTTP_400_BAD_REQUEST)
+    # Check if the room exists
+    try:
+        chat_room = Chatroom.objects.get(name=room_name)
+    except Chatroom.DoesNotExist:
+        # Room does not exist, return a 404 response
+        return Response({'error': 'Chatroom not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == "GET":
+        # Retrieve all messages for the room and return them in the response
+        messages = Message.objects.filter(room=chat_room)
+        serializer = MessageSerializer(messages, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == "POST":
+        # Create a new message for the room and return it in the response
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
