@@ -7,26 +7,26 @@ body {
     height: 100vh;
     margin: 0;
 }
-  
+
 .container {
     text-align: center;
 }
-  
+
 h1 {
     font-size: 5rem;
     line-height: 1.2;
     color: #3f3f3f;
 }
-  
+
 p {
     font-size: 1.5rem;
     color: #3f3f3f;
 }
-  
+
 form {
     margin-top: 3rem;
 }
-  
+
 input[type="text"] {
     width: 300px;
     height: 40px;
@@ -40,7 +40,7 @@ input[type="text"]:focus {
     outline: none;
     box-shadow: 0 0 2px 1px #941F1F;
 }
-  
+
 button[type="submit"] {
     width: 300px;
     height: 40px;
@@ -52,7 +52,7 @@ button[type="submit"] {
     font-size: 1.2rem;
     margin-top: 1rem;
 }
-  
+
 button[type="submit"]:hover {
     border: 2px solid #fff;
 }
