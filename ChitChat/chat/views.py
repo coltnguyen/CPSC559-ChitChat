@@ -22,20 +22,16 @@ def loginUser(request):
     testUser = testUser.filter(password=password)
 
     if testUser:
-        serializer = UserSerializer(testUser, many=True)  
-        return JsonResponse(serializer.data, safe=False)       
+        serializer = UserSerializer(testUser, many=True)
+        return JsonResponse(serializer.data, safe=False)
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
-    
+
 
 @api_view(['POST'])
-def registerUser(request):  
+def registerUser(request):
     if request.method == "POST":
         serializer = UserSerializer(data = request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
-
-
-

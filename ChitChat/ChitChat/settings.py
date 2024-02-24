@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'chat',
     'rest_framework',
     'corsheaders',
+    'channels',
 ]
 
 # Channels
