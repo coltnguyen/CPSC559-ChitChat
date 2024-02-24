@@ -4,7 +4,7 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from chat.routing import websocket_urlpatterns
 from channels.auth import AuthMiddlewareStack
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'chat.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ChitChat.settings')
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
