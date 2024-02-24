@@ -40,6 +40,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,10 +50,13 @@ INSTALLED_APPS = [
     'chat',
     'rest_framework',
     'corsheaders',
+    'channels',
 ]
 
 # Channels
-ASGI_APPLICATION = 'ChitChat.routing.application'
+ASGI_APPLICATION = 'ChitChat.asgi.application'
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

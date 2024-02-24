@@ -1,96 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/SUStyles.css">
-    <title>Sign up Page</title>
-</head>
-<body>
-    <div class="container">
-        <img class="logo" src="images/logo.png" alt="Chit Chat logo">
-        <form action="loginPage.html" method="get">
-        <h2>SIGN UP</h2>
-            <div>
-                <input type="text" id="firstname" placeholder="Enter First Name" required>
-            </div>
-            <div>
-                <input type="text" id="lastname" placeholder="Enter Last Name" required>
-            </div>
-            <div>
-                <input type="text" id="username" placeholder="Enter User Name" required>
-            </div>
-            <div>
-                <input type="password" id="password" placeholder="Enter Password" required>
-            </div>
-            
-            <div>
-                <button type="submit" onclick="CreateUser()">Create Account</button>
-            </div>
-        </form>
-    </div>
-</body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="css/SUStyles.css" />
+        <title>Sign up Page</title>
+    </head>
+    <body>
+        <div class="container">
+            <img class="logo" src="images/logo.png" alt="Chit Chat logo" />
+            <form action="loginPage.html" method="get">
+                <h2>SIGN UP</h2>
+                <div>
+                    <input
+                        type="text"
+                        id="firstname"
+                        placeholder="Enter First Name"
+                        required />
+                </div>
+                <div>
+                    <input
+                        type="text"
+                        id="lastname"
+                        placeholder="Enter Last Name"
+                        required />
+                </div>
+                <div>
+                    <input
+                        type="text"
+                        id="username"
+                        placeholder="Enter User Name"
+                        required />
+                </div>
+                <div>
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Enter Password"
+                        required />
+                </div>
+
+                <div>
+                    <button type="submit" onclick="CreateUser()">
+                        Create Account
+                    </button>
+                </div>
+            </form>
+        </div>
+    </body>
 </html>
 
 <script>
-    async function CreateUser()
-    {
+    async function CreateUser() {
         console.log(username);
-        
+
         // Define the URL for the POST request
-        const url = 'http://127.0.0.1:8000/register/';
+        const url = "http://127.0.0.1:8000/register/";
 
         // Define the data to be sent in the request body
         const postData = {
             userName: username,
             firstName: firstName,
             lastName: lastName,
-            password: password
+            password: password,
         };
 
         // Configuration for the fetch request
         const requestOptions = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json', // Specify the content type
-            // You can add other headers here if needed
-        },
-        body: JSON.stringify(postData) // Convert data to JSON string
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json", // Specify the content type
+                // You can add other headers here if needed
+            },
+            body: JSON.stringify(postData), // Convert data to JSON string
         };
 
         // Make the POST request
         fetch(url, requestOptions)
-        .then(response => {
-            if (!response.ok) {
-            throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            // Handle the response data
-            console.log(data);
-        })
-        .catch(error => {
-            // Handle errors
-            console.error('There was a problem with the fetch operation:', error);
-        });
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                return response.json();
+            })
+            .then((data) => {
+                // Handle the response data
+                console.log(data);
+            })
+            .catch((error) => {
+                // Handle errors
+                console.error(
+                    "There was a problem with the fetch operation:",
+                    error
+                );
+            });
     }
 
+    // Get reference to the input field and save button
+    const firstnameField = document.getElementById("firstname");
+    const lastnameField = document.getElementById("lastname");
+    const usernameField = document.getElementById("username");
+    const passwordField = document.getElementById("password");
+    let firstName = "";
+    let lastName = "";
+    let username = "";
+    let password = "";
 
-        // Get reference to the input field and save button
-        const firstnameField = document.getElementById('firstname');
-        const lastnameField = document.getElementById('lastname');
-        const usernameField= document.getElementById('username');
-        const passwordField = document.getElementById('password');
-        let firstName = '';
-        let lastName = '';
-        let username = '';
-        let password = '';
-        
-
-        // Event listener to update the variable when input changes
-        firstnameField.addEventListener('input', function(event) {firstName = event.target.value;});
-        lastnameField.addEventListener('input', function(event) {lastName = event.target.value;});
-        usernameField.addEventListener('input', function(event) {username = event.target.value;});
-        passwordField.addEventListener('input', function(event) {password = event.target.value;});
+    // Event listener to update the variable when input changes
+    firstnameField.addEventListener("input", function (event) {
+        firstName = event.target.value;
+    });
+    lastnameField.addEventListener("input", function (event) {
+        lastName = event.target.value;
+    });
+    usernameField.addEventListener("input", function (event) {
+        username = event.target.value;
+    });
+    passwordField.addEventListener("input", function (event) {
+        password = event.target.value;
+    });
 </script>
