@@ -5,5 +5,5 @@ from . import consumers
 # It maps the path 'ws/testpath/' to the chatConsumer class, allowing websocket connections to be established at this endpoint.
 
 websocket_urlpatterns = [
-    path('ws/chat/', consumers.chatConsumer.as_asgi()),
+    path('ws/chat/<str:room_name>/', consumers.chatConsumer.as_asgi()),
 ]

@@ -44,7 +44,8 @@
 </html>
 
 <script>
-    var socket = new WebSocket("ws://127.0.0.1:8000/ws/chat");
+    var roomName = "global"; // Replace with actual room name
+    var socket = new WebSocket("ws://127.0.0.1:8000/ws/chat/" + roomName + "/");
 
     socket.onopen = function () {
         console.log("WebSocket connection established.");
@@ -62,9 +63,27 @@
     };
 
     socket.onerror = function (event) {
-        console.log("WebSocket connection closed with code:", event.code);
+        console.error("WebSocket connection closed with code:", event.code);
         // Probably want to log them out and return to landing page as well
     };
+
+    function sendMsg() {
+        const input = document.querySelector("#myMsg");
+        if (input.value.trim() === "") {
+            alert("Please enter a message before sending");
+            return;
+        }
+
+        const msg = {
+            // user:
+            text: input.value,
+            timestamp: new Date().toLocaleDateString(),
+        };
+
+        socket.send(JSON.stringify(msg));
+
+        input.value = ""; // Clear the input field
+    }
 
     function displayMsg() {
         const input = document.querySelector("#myMsg");
@@ -72,10 +91,10 @@
         const newMsg = document.createElement("p");
         const time = document.createElement("p");
 
-        if (input.value.trim() === "") {
-            alert("Please enter a message before sending");
-            return;
-        }
+        // if (input.value.trim() === "") {
+        //     alert("Please enter a message before sending");
+        //     return;
+        // }
 
         const now = new Date();
         const timeString = now.toLocaleTimeString();
@@ -89,27 +108,26 @@
         input.value = ""; // Clear the input field
     }
 
-    function displayRecMsg() {
-        const input = document.querySelector("#recMsg");
+    function displayRecMsg(json) {
+        const msg = JSON.parse(json);
+        // const input = document.querySelector("#recMsg");
         const output = document.querySelector("#msgBox");
         const newMsg = document.createElement("p");
         const user = document.createElement("p");
         const time = document.createElement("p");
 
-        const now = new Date();
-        const timeString = now.toLocaleTimeString();
-        time.textContent = timeString;
+        time.textContent = msg.timestamp;
         time.classList.add("timestamp-rec");
 
+        // TODO replace with actual username
         user.textContent = "user1";
         user.classList.add("userName");
 
-        newMsg.textContent = input.value;
+        newMsg.textContent = msg.text;
         newMsg.classList.add("chat-bubble-rec");
 
         output.appendChild(user);
         output.appendChild(newMsg);
         output.appendChild(time);
-        input.value = ""; // Clear the input field
     }
 </script>
