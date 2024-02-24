@@ -38,6 +38,8 @@ class WSConsumer(WebsocketConsumer):
             }
         )
 
+        print(message)
+
     # Called when a chat message is received from the room group.
     def chat_message(self, event):
         message = event['message']
