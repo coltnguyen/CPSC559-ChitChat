@@ -62,16 +62,15 @@ body {
     border: 2px solid #fff;
 }
 
-.chat-bubble {
-    background-color: #941F1F;
+.chat-bubble-sent, .chat-bubble-rec{
+    
     border-radius: 10px;
     color: white;
     padding: 10px;
-    align-self: flex-end;
     margin: 0;
     max-width: 50%;
     display: flex;
-    flex-direction: column;
+    
     align-items: flex-start;
 }
 
@@ -80,8 +79,34 @@ body {
     word-wrap: break-word;
 }
 
-.timestamp {
-    align-self: flex-end;
+.chat-bubble-sent {
+	align-self: flex-end;
+	background-color: #941F1F;
+}
+
+.chat-bubble-rec {
+	align-self: flex-start;
+	background-color: #080707;
+	margin:1rem;
+}
+.timestamp-sent, .timestamp-rec {
+    margin: 0;
+    margin-left: auto;
+    margin-right: 1rem;
+    font-size: 0.8rem;
+    color: #fff;
+}
+
+.timestamp-sent {
+	align-self: flex-end;
+}
+
+.timestamp-rec {
+	align-self: flex-start;
+}
+
+.userName {
+	align-self: flex-start;
     margin: 0;
     margin-left: auto;
     margin-right: 1rem;
