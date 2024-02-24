@@ -49,10 +49,17 @@ INSTALLED_APPS = [
     'chat',
     'rest_framework',
     'corsheaders',
+    'channels',
 ]
 
 # Channels
 ASGI_APPLICATION = 'ChitChat.routing.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
