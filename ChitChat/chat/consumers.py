@@ -32,6 +32,7 @@ class chatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         try:
             message = json.loads(text_data)
+            username = message['username']
             text = message['text']
             timestamp = message['timestamp']
         except json.JSONDecodeError:
@@ -46,14 +47,15 @@ class chatConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             {
                 'type': 'chat_message',
+                'username': username,
                 'text': text,
                 'timestamp': timestamp,
             }
         )
 
     async def chat_message(self, event):
+        username = event['username']
         text = event['text']
         timestamp = event['timestamp']
-        print(f"text={text}", f"timestamp={timestamp}")
         # Send the message to the connected client
-        await self.send(json.dumps({'text':text, 'timestamp':timestamp}))
+        await self.send(json.dumps({'username': username, 'text':text, 'timestamp':timestamp}))

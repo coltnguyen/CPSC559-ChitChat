@@ -44,7 +44,7 @@
 </html>
 
 <script>
-    var roomName = "global"; // Replace with actual room name
+    var roomName = localStorage.getItem("chatroom");
     var socket = new WebSocket("ws://127.0.0.1:8000/ws/chat/" + roomName + "/");
 
     socket.onopen = function () {
@@ -52,8 +52,10 @@
     };
 
     socket.onmessage = function (event) {
-        console.log("Received message:", event.data);
-        displayRecMsg(event.data);
+        const msg = JSON.parse(event.data);
+        console.log("Received message:", msg);
+        const username = localStorage.getItem("username");
+        displayMsg(msg, username !== msg.username);
     };
 
     socket.onclose = function (event) {
@@ -73,8 +75,9 @@
             return;
         }
 
+        const user = localStorage.getItem("username");
         const msg = {
-            // user:
+            username: user,
             text: input.value,
             timestamp: new Date().toLocaleDateString(),
         };
@@ -84,49 +87,66 @@
         input.value = ""; // Clear the input field
     }
 
-    function displayMsg() {
-        const input = document.querySelector("#myMsg");
-        const output = document.querySelector("#msgBox");
-        const newMsg = document.createElement("p");
-        const time = document.createElement("p");
-
-        // if (input.value.trim() === "") {
-        //     alert("Please enter a message before sending");
-        //     return;
-        // }
-
-        const now = new Date();
-        const timeString = now.toLocaleTimeString();
-        time.textContent = timeString;
-        time.classList.add("timestamp-sent");
-
-        newMsg.textContent = input.value;
-        newMsg.classList.add("chat-bubble-sent");
-        output.appendChild(newMsg);
-        output.appendChild(time);
-        input.value = ""; // Clear the input field
-    }
-
-    function displayRecMsg(json) {
-        const msg = JSON.parse(json);
-        // const input = document.querySelector("#recMsg");
+    function displayMsg(msg, wasReceived) {
         const output = document.querySelector("#msgBox");
         const newMsg = document.createElement("p");
         const user = document.createElement("p");
         const time = document.createElement("p");
 
         time.textContent = msg.timestamp;
-        time.classList.add("timestamp-rec");
-
-        // TODO replace with actual username
-        user.textContent = "user1";
-        user.classList.add("userName");
-
+        user.textContent = msg.username;
         newMsg.textContent = msg.text;
-        newMsg.classList.add("chat-bubble-rec");
+
+        if (wasReceived) {
+            user.classList.add("username-rec");
+            time.classList.add("timestamp-rec");
+            newMsg.classList.add("chat-bubble-rec");
+        } else {
+            user.classList.add("username-sent");
+            time.classList.add("timestamp-sent");
+            newMsg.classList.add("chat-bubble-sent");
+        }
 
         output.appendChild(user);
         output.appendChild(newMsg);
         output.appendChild(time);
     }
+
+    // function displayMsg(msg) {
+    //     const input = document.querySelector("#myMsg");
+    //     const output = document.querySelector("#msgBox");
+    //     const newMsg = document.createElement("p");
+    //     const time = document.createElement("p");
+
+    //     const now = new Date();
+    //     const timeString = now.toLocaleTimeString();
+    //     time.textContent = timeString;
+    //     time.classList.add("timestamp-sent");
+
+    //     newMsg.textContent = input.value;
+
+    //     output.appendChild(newMsg);
+    //     output.appendChild(time);
+    //     input.value = ""; // Clear the input field
+    // }
+
+    // function displayRecMsg(msg) {
+    //     const output = document.querySelector("#msgBox");
+    //     const newMsg = document.createElement("p");
+    //     const user = document.createElement("p");
+    //     const time = document.createElement("p");
+
+    //     time.textContent = msg.timestamp;
+    //     time.classList.add("timestamp-rec");
+
+    //     user.textContent = "user1";
+    //     user.classList.add("userName");
+
+    //     newMsg.textContent = msg.text;
+    //     newMsg.classList.add("chat-bubble-rec");
+
+    //     output.appendChild(user);
+    //     output.appendChild(newMsg);
+    //     output.appendChild(time);
+    // }
 </script>

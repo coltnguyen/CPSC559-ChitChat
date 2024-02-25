@@ -52,7 +52,7 @@ body {
 .chat-input button {
 	background-color: #941F1F;
 	color: #fff;
-	padding: 0.5rem 2rem;   
+	padding: 0.5rem 2rem;
 	border: none;
 	border-radius: 4px;
 	cursor: pointer;
@@ -63,14 +63,14 @@ body {
 }
 
 .chat-bubble-sent, .chat-bubble-rec{
-    
+
     border-radius: 10px;
     color: white;
     padding: 10px;
     margin: 0;
     max-width: 50%;
     display: flex;
-    
+
     align-items: flex-start;
 }
 
@@ -105,11 +105,18 @@ body {
 	align-self: flex-start;
 }
 
-.userName {
-	align-self: flex-start;
+.username-sent, .username-rec {
     margin: 0;
     margin-left: auto;
     margin-right: 1rem;
     font-size: 0.8rem;
     color: #fff;
+}
+
+.username-rec {
+	align-self: flex-end;
+}
+
+.username-rec {
+	align-self: flex-start;
 }
