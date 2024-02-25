@@ -41,8 +41,6 @@ class chatConsumer(AsyncWebsocketConsumer):
             # TODO Send some sort of error msg
             return
 
-        print(f"text={text}", f"timestamp={timestamp}")
-
         # Broadcast the received message to all clients
         await self.channel_layer.group_send(
             self.room_group_name,

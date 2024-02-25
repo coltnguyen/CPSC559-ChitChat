@@ -1,3 +1,4 @@
+from django.contrib.auth import authenticate
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from .models import User
@@ -5,6 +6,7 @@ from .serializers import UserSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+import json
 
 
 # Create your views here.
@@ -12,20 +14,25 @@ def chat(request):
     return render(request, 'chat/chatroom.html')
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def loginUser(request):
-
-    userName = request.query_params["userName"]
-    password = request.query_params["password"]
-
-    testUser = User.objects.filter(userName=userName)
-    testUser = testUser.filter(password=password)
-
-    if testUser:
-        serializer = UserSerializer(testUser, many=True)
-        return JsonResponse(serializer.data, safe=False)
-    else:
+    try:
+        message = json.loads(request.body)
+        username = message.get('userName')
+        password = message.get('password')
+    except json.JSONDecodeError:
         return Response(status=status.HTTP_400_BAD_REQUEST)
+    except KeyError:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    # Manually check the username and password against the database
+    user = User.objects.get(userName=username, password=password)
+    if user is not None:
+        # If the user is found, return a success response
+        return JsonResponse({"username": username, "chatroom": "global"}, status=status.HTTP_200_OK)
+    else:
+        # If the user is not found, return an unauthorized response
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 @api_view(['POST'])

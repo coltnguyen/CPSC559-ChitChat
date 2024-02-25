@@ -20,7 +20,7 @@
                     required />
                 <button
                     class="fas fa-chevron-right"
-                    onclick="displayMsg()"></button>
+                    onclick="sendMsg()"></button>
                 <p class="output"></p>
                 <div id="timestamp" class="timestamp"></div>
             </div>
@@ -52,9 +52,8 @@
     };
 
     socket.onmessage = function (event) {
-        var message = event.data;
-        console.log("Received message:", message);
-        displayRecMsg(message);
+        console.log("Received message:", event.data);
+        displayRecMsg(event.data);
     };
 
     socket.onclose = function (event) {
