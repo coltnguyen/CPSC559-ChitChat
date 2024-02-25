@@ -7,6 +7,10 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 import json
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 
 # Create your views here.
@@ -37,8 +41,10 @@ def loginUser(request):
 
 @api_view(['POST'])
 def registerUser(request):
+    logger.debug(f"Received data: {request.data}")
     if request.method == "POST":
-        serializer = UserSerializer(data = request.data)
+        serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
