@@ -41,10 +41,13 @@ def loginUser(request):
 
 @api_view(['POST'])
 def registerUser(request):
-    logger.debug(f"Received data: {request.data}")
-    if request.method == "POST":
-        serializer = UserSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+    # Check if the username already exists
+    if User.objects.filter(userName=request.data.get('userName')).exists():
+        return Response({'message': 'User already exists'}, status=status.HTTP_400_BAD_REQUEST)
+
+    serializer = UserSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'message': 'Account Created'}, status=status.HTTP_201_CREATED)
+    else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
