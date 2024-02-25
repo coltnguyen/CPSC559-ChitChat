@@ -9,7 +9,10 @@
     <body>
         <div class="container">
             <img class="logo" src="images/logo.png" alt="Chit Chat logo" />
-            <form>
+            <form
+                action="/submit-form"
+                method="post"
+                onsubmit="handleFormSubmit(event)">
                 <h2>LOG IN</h2>
                 <div>
                     <input
@@ -26,9 +29,7 @@
                         required />
                 </div>
                 <div>
-                    <button type="submit" onclick="SubmitLoginInformations()">
-                        Log In
-                    </button>
+                    <button type="submit">Log In</button>
                 </div>
             </form>
         </div>
@@ -36,6 +37,13 @@
 </html>
 
 <script>
+    function handleFormSubmit(event) {
+        event.preventDefault(); // Prevent the default form submission
+        // Call your custom function here
+        SubmitLoginInformations();
+        // Optionally, submit the form programmatically
+        // document.getElementById('myForm').submit();
+    }
     async function SubmitLoginInformations() {
         const url = new URL("http://127.0.0.1:8000/login/");
 
@@ -65,8 +73,8 @@
                 localStorage.setItem("chatroom", data.chatroom);
 
                 // Redirect to the chat page or perform other actions
-                window.location.href = "chatPage.html";
+                window.location.href = "./chatPage.html";
             })
-            .catch((error) => console.error(error));
+            .catch((error) => alert(error));
     }
 </script>
