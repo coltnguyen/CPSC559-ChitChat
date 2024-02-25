@@ -2,3 +2,5 @@
 venv/
 myenv/
 .myenv/
+ChitChat/chat/__pycache__/
+ChitChat/__pycache__/

@@ -9,7 +9,7 @@
     <body>
         <div class="container">
             <img class="logo" src="images/logo.png" alt="Chit Chat logo" />
-            <form action="loginPage.html" method="get">
+            <form id="signupForm" onsubmit="CreateUser(event)">
                 <h2>SIGN UP</h2>
                 <div>
                     <input
@@ -41,7 +41,7 @@
                 </div>
 
                 <div>
-                    <button type="submit" onclick="CreateUser()">
+                    <button type="submit">
                         Create Account
                     </button>
                 </div>
@@ -51,13 +51,30 @@
 </html>
 
 <script>
-    async function CreateUser() {
-        console.log(username);
+    // Define variables in the global scope
+    let firstName = "";
+    let lastName = "";
+    let username = "";
+    let password = "";
 
-        // Define the URL for the POST request
+    // Event listeners to update the variables when input changes
+    document.getElementById("firstname").addEventListener("input", function (event) {
+        firstName = event.target.value;
+    });
+    document.getElementById("lastname").addEventListener("input", function (event) {
+        lastName = event.target.value;
+    });
+    document.getElementById("username").addEventListener("input", function (event) {
+        username = event.target.value;
+    });
+    document.getElementById("password").addEventListener("input", function (event) {
+        password = event.target.value;
+    });
+
+    async function CreateUser(event) {
+        event.preventDefault(); // Prevent default form submission
+
         const url = "http://127.0.0.1:8000/register/";
-
-        // Define the data to be sent in the request body
         const postData = {
             userName: username,
             firstName: firstName,
@@ -65,58 +82,25 @@
             password: password,
         };
 
-        // Configuration for the fetch request
         const requestOptions = {
             method: "POST",
             headers: {
-                "Content-Type": "application/json", // Specify the content type
-                // You can add other headers here if needed
+                "Content-Type": "application/json",
             },
-            body: JSON.stringify(postData), // Convert data to JSON string
+            body: JSON.stringify(postData),
         };
 
-        // Make the POST request
-        fetch(url, requestOptions)
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
-                }
-                return response.json();
-            })
-            .then((data) => {
-                // Handle the response data
-                console.log(data);
-            })
-            .catch((error) => {
-                // Handle errors
-                console.error(
-                    "There was a problem with the fetch operation:",
-                    error
-                );
-            });
+        try {
+            const response = await fetch(url, requestOptions);
+            const data = await response.json();
+            if (response.ok) {
+                alert(data.message); // "Account Created"
+                window.location.href = './loginPage.html'; // Redirect to the login page
+            } else {
+                alert(data.message); // "User already exists" or other error messages
+            }
+        } catch (error) {
+            console.error("There was a problem with the fetch operation:", error);
+        }
     }
-
-    // Get reference to the input field and save button
-    const firstnameField = document.getElementById("firstname");
-    const lastnameField = document.getElementById("lastname");
-    const usernameField = document.getElementById("username");
-    const passwordField = document.getElementById("password");
-    let firstName = "";
-    let lastName = "";
-    let username = "";
-    let password = "";
-
-    // Event listener to update the variable when input changes
-    firstnameField.addEventListener("input", function (event) {
-        firstName = event.target.value;
-    });
-    lastnameField.addEventListener("input", function (event) {
-        lastName = event.target.value;
-    });
-    usernameField.addEventListener("input", function (event) {
-        username = event.target.value;
-    });
-    passwordField.addEventListener("input", function (event) {
-        password = event.target.value;
-    });
 </script>
