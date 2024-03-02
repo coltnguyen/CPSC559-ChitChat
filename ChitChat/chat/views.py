@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from .models import User
-from .serializers import UserSerializer
+from .serializers import *
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -33,7 +33,7 @@ def loginUser(request):
     try:
         _ = User.objects.get(userName=username, password=password)
         # If the user is found, return a success response
-        return JsonResponse({"username": username, "chatroom": "global"}, status=status.HTTP_200_OK)
+        return JsonResponse({"username": username, "id":_.id, "chatroom": "global"}, status=status.HTTP_200_OK)
     except User.DoesNotExist:
         # If the user is not found, return an unauthorized response
         return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -51,3 +51,29 @@ def registerUser(request):
         return Response({'message': 'Account Created'}, status=status.HTTP_201_CREATED)
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+     
+
+@api_view(['POST'])
+def allMessages(request):
+    try:
+        messages = Message.objects.filter(chatroomId = request.data.get('chatroomId'))
+        serializer = MessageSerializer(messages, many=True)  
+        # If the messages are found, return a success response
+        return JsonResponse(serializer.data, status=status.HTTP_200_OK, safe=False)
+    except User.DoesNotExist:
+        # If the messages are not found, return an bad request response
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def createMessage(request):
+    serializer = MessageSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'message': 'Message Saved'}, status=status.HTTP_201_CREATED)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+

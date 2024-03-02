@@ -13,3 +13,14 @@ class User(models.Model):
         # Set the user's password and save the user instance
         self.password = raw_password  # Assign the raw password to the user's password field
         self.save()  # Save the user instance to the database
+
+class Message(models.Model):
+    userId = models.IntegerField()
+    userName = models.CharField(max_length=50)
+    chatroomId = models.IntegerField()
+    message = models.CharField(max_length=500)
+    date = models.DateTimeField(auto_now_add=True)
+
+class Chatroom(models.Model):
+    chatName = models.CharField(max_length=50, unique=True)
+

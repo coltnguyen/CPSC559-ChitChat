@@ -46,6 +46,38 @@
 <script>
     var roomName = localStorage.getItem("chatroom");
     var socket = new WebSocket("ws://127.0.0.1:8000/ws/chat/" + roomName + "/");
+    var saveMessageURL = new URL("http://127.0.0.1:8000/message/create");
+    var getAllMessagesURL = new URL("http://127.0.0.1:8000/message/all/");
+
+    window.addEventListener('load', function(event) {
+
+        const chatroomData = {
+            chatroomId: 1,
+        };
+
+        fetch(getAllMessagesURL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json", 
+            },
+            body: JSON.stringify(chatroomData), // Convert the data object to a JSON string
+        })
+            .then((response) => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error("Getting messages failed!");
+                }
+            })
+            .then((data) => {
+                console.log(data);
+
+                for (var j = 0; j < data.length; j++){
+                    displayPreviousMsg(data[j])
+                }
+            })
+            .catch((error) => alert(error));
+    });
 
     socket.onopen = function () {
         console.log("WebSocket connection established.");
@@ -75,16 +107,68 @@
             return;
         }
 
+        //Sending message to websocket
         const user = localStorage.getItem("username");
         const msg = {
             username: user,
             text: input.value,
             timestamp: new Date().toLocaleDateString(),
         };
-
         socket.send(JSON.stringify(msg));
 
+
+        //Sending message to save to DB
+        const saveMessageData = {
+            userId: localStorage.getItem("id"),
+            userName: localStorage.getItem("username"),
+            chatroomId: 1,
+            message: input.value,
+        };
+
+        fetch(saveMessageURL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json", 
+            },
+            body: JSON.stringify(saveMessageData),
+        })
+            .then((response) => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error("Message Save Failed!");
+                }
+            })
+            .then((data) => {
+                console.log(data);
+            })
+            .catch((error) => alert(error));
+
         input.value = ""; // Clear the input field
+    }
+    function displayPreviousMsg(messageSender) {
+        const output = document.querySelector("#msgBox");
+        const newMsg = document.createElement("p");
+        const user = document.createElement("p");
+        const time = document.createElement("p");
+
+        time.textContent = messageSender.date;
+        user.textContent = messageSender.userName;
+        newMsg.textContent = messageSender.message;
+
+        if (messageSender.userId != localStorage.getItem("id")) {
+            user.classList.add("username-rec");
+            time.classList.add("timestamp-rec");
+            newMsg.classList.add("chat-bubble-rec");
+        } else {
+            user.classList.add("username-sent");
+            time.classList.add("timestamp-sent");
+            newMsg.classList.add("chat-bubble-sent");
+        }
+
+        output.appendChild(user);
+        output.appendChild(newMsg);
+        output.appendChild(time);
     }
 
     function displayMsg(msg, wasReceived) {
