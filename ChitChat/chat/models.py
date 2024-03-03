@@ -2,7 +2,15 @@ from django.db import models
 
 from django.contrib.auth.hashers import make_password
 
-class User(models.Model):
+class ReplicatableModel(models.Model):
+    class Meta:
+        abstract = True
+
+    def save(self, *args, **kwargs):
+        for db in settings.DATABASES:
+            super(ReplicatableModel, self).save(using=db)
+
+class User(ReplicatableModel):
     # Define the fields for the User model
     firstName = models.CharField(max_length=50)  # User's first name
     lastName = models.CharField(max_length=50)  # User's last name
@@ -14,12 +22,12 @@ class User(models.Model):
         self.password = raw_password  # Assign the raw password to the user's password field
         self.save()  # Save the user instance to the database
 
-class Message(models.Model):
+class Message(ReplicatableModel):
     userId = models.IntegerField()
     userName = models.CharField(max_length=50)
     chatroomId = models.IntegerField()
     message = models.CharField(max_length=500)
     date = models.DateTimeField(auto_now_add=True)
 
-class Chatroom(models.Model):
+class Chatroom(ReplicatableModel):
     chatName = models.CharField(max_length=50, unique=True)
