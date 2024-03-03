@@ -7,8 +7,11 @@ class ReplicatableModel(models.Model):
         abstract = True
 
     def save(self, *args, **kwargs):
-        for db in settings.DATABASES:
-            self.save(using=db)
+        # Write to the default database first
+        super(ReplicatableModel, self).save(using='default')
+
+        # Then, write to the replica database
+        super(ReplicatableModel, self).save(using='replica')
 
 
 class User(ReplicatableModel):
@@ -21,7 +24,7 @@ class User(ReplicatableModel):
     def set_password(self, raw_password):
         # Set the user's password and save the user instance
         self.password = raw_password  # Assign the raw password to the user's password field
-        self.save()  # Save the user instance to the database
+        # self.save()  # Save the user instance to the database
 
 class Message(ReplicatableModel):
     userId = models.IntegerField()
