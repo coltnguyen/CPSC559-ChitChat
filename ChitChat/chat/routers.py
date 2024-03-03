@@ -6,34 +6,33 @@ class ReplicaRouter:
     def db_for_read(self, model, **hints):
         """Directs read operations to the replica database, falling back to the default if the replica is not available."""
         try:
-            # Attempt to connect to the replica database
-            # This is a placeholder; you'll need to implement an actual check
-            if self.is_replica_available():
-                return 'replica'
+            # Attempt to connect to the default database
+            if self.is_default_available():
+                return 'default'
         except Exception:
-            # If an error occurs (e.g., the replica is down), fall back to the default
+            # If an error occurs (e.g., the default is down), fall back to the default
             pass
-        return 'default'
+        return 'replica'
 
     def db_for_write(self, model, **hints):
         """Directs write operations to both the default and replica databases. This method should return a list of database aliases."""
-        return ['default', 'replica']
+        # FIX. Currently can only write to one database at a time.
+        return 'replica'
 
-    def is_replica_available(self):
+    def is_default_available(self):
         """Checks if the replica database is available for read operations."""
         # Configuration for connecting to the replica database
-        # This should match your Django database settings for the replica
-        replica_config = {
+        default_config = {
             'host': 'mongodb+srv://coltvnguyen:Legitpassword12@chitchat-cluster-1.gjvrsgz.mongodb.net/?retryWrites=true&w=majority',
-            'dbname': 'chitchat_db_replica',
+            'dbname': 'chitchat_db',
         }
 
         try:
             # Attempt to create a client and get database server status
-            client = MongoClient(replica_config['host'])
-            db = client[replica_config['dbname']]
+            client = MongoClient(default_config['host'])
+            db = client[default_config['dbname']]
             # Perform a simple operation like retrieving server status
-            db.command("serverStatus")
+            db.command("ping")
             return True
         except PyMongoError:
             # If any PyMongo error occurs, assume the replica is not available
@@ -47,7 +46,4 @@ class ReplicaRouter:
         return True
 
     def allow_migrate(self, db, app_label, model_name=None, **hints):
-        """Controls which database can be migrated."""
-        if app_label == 'chat':
-            return db in ['default', 'replica']
-        return None
+      return True
