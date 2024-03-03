@@ -117,11 +117,11 @@ DATABASES = {
         }
     },
     'replica': {
-    'ENGINE': 'djongo',
-    'NAME': 'chitchat_db_replica',
-    'ENFORCE_SCHEMA': False,
-    'CLIENT': {
-        'host': 'mongodb+srv://coltvnguyen:Legitpassword12@chitchat-cluster-1.gjvrsgz.mongodb.net/?retryWrites=true&w=majority'
+        'ENGINE': 'djongo',
+        'NAME': 'chitchat_db_replica',
+        'ENFORCE_SCHEMA': False,
+        'CLIENT': {
+            'host': 'mongodb+srv://coltvnguyen:Legitpassword12@chitchat-cluster-1.gjvrsgz.mongodb.net/?retryWrites=true&w=majority'
         }
     }
 }
