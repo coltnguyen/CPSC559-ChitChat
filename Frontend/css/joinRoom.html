@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="css/JRStyles.css" />
+        <title>Join Room Page</title>
+    </head>
+    <body>
+        <div class="container">
+            <img class="logo" src="images/logo.png" alt="Chit Chat logo" />
+            <h2>What chat room would you like to enter?</h2>
+            <form>
+                <div>
+                    <input
+                        type="text"
+                        id="roomName"
+                        placeholder="Enter chatroom name"
+                        required />
+                <div>
+                    <button input id="room-name-submit" type="submit">Join Room</button>
+            </form>
+        </div>
+    </body>
+</html>
+
+<script>
+    document.querySelector('#room-name-submit').onclick = function(e) {
+        var roomName = document.querySelector('#room-name-input').value;
+        window.location.pathname = '/chat/' + roomName + '/';
+    };
+</script>
