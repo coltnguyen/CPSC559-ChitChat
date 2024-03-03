@@ -7,8 +7,8 @@ class ReplicatableModel(models.Model):
         abstract = True
 
     def save(self, *args, **kwargs):
-        for alias, db_config in settings.DATABASES:
-            super(ReplicatableModel, self).save(using=alias)
+        for db in settings.DATABASES:
+            super(ReplicatableModel, self).save(using=db)
 
 class User(ReplicatableModel):
     # Define the fields for the User model
