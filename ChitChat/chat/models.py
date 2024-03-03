@@ -1,5 +1,5 @@
 from django.db import models
-
+from ChitChat import settings
 from django.contrib.auth.hashers import make_password
 
 class ReplicatableModel(models.Model):
@@ -7,8 +7,8 @@ class ReplicatableModel(models.Model):
         abstract = True
 
     def save(self, *args, **kwargs):
-        for db in settings.DATABASES:
-            super(ReplicatableModel, self).save(using=db)
+        for alias, db_config in settings.DATABASES:
+            super(ReplicatableModel, self).save(using=alias)
 
 class User(ReplicatableModel):
     # Define the fields for the User model
