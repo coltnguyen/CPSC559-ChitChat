@@ -115,9 +115,19 @@ DATABASES = {
         'CLIENT': {
            'host': 'mongodb+srv://coltvnguyen:Legitpassword12@chitchat-cluster-1.gjvrsgz.mongodb.net/?retryWrites=true&w=majority'
         }
+    },
+    'replica': {
+    'ENGINE': 'djongo',
+    'NAME': 'chitchat_db_replica',
+    'ENFORCE_SCHEMA': False,
+    'CLIENT': {
+        'host': 'mongodb+srv://coltvnguyen:Legitpassword12@chitchat-cluster-1.gjvrsgz.mongodb.net/?retryWrites=true&w=majority'
+        }
     }
 }
 
+# Path to our router class
+DATABASE_ROUTERS = ['chat.routers.ReplicaRouter']
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

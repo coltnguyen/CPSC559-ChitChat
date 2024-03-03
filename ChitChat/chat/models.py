@@ -23,4 +23,3 @@ class Message(models.Model):
 
 class Chatroom(models.Model):
     chatName = models.CharField(max_length=50, unique=True)
-
