@@ -20,7 +20,7 @@ class ReplicaRouter:
         return 'replica'
 
     def is_default_available(self):
-        """Checks if the replica database is available for read operations."""
+        """Checks if the default database is available for read operations."""
         # Configuration for connecting to the replica database
         default_config = {
             'host': 'mongodb+srv://coltvnguyen:Legitpassword12@chitchat-cluster-1.gjvrsgz.mongodb.net/?retryWrites=true&w=majority',
