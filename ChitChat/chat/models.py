@@ -7,12 +7,19 @@ class ReplicatableModel(models.Model):
         abstract = True
 
     def save(self, *args, **kwargs):
-        # Write to the default database first
-        super(ReplicatableModel, self).save(using='default')
+        # Extract 'using' from kwargs if it exists
+        try:
+            super(ReplicatableModel, self).save(using='default', *args, **kwargs)
+        except Exception as e:
+            print(f"Error saving to default database: {e}")
+            return
 
-        # Then, write to the replica database
-        super(ReplicatableModel, self).save(using='replica')
-
+        # Attempt to save to the replica database
+        try:
+            super(ReplicatableModel, self).save(using='replica', *args, **kwargs)
+        except Exception as e:
+            print(f"Error saving to replica database: {e}")
+            return
 
 class User(ReplicatableModel):
     # Define the fields for the User model
