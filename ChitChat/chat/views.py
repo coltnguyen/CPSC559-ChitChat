@@ -65,15 +65,32 @@ def allMessages(request):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+# @api_view(['POST'])
+# def createMessage(request):
+#     serializer = MessageSerializer(data=request.data)
+#     if serializer.is_valid():
+#         serializer.save()
+#         return Response({'message': 'Message Saved'}, status=status.HTTP_201_CREATED)
+#     else:
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['POST'])
 def createMessage(request):
-    serializer = MessageSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response({'message': 'Message Saved'}, status=status.HTTP_201_CREATED)
+    if 'batchMessages' in request.data:
+        batchMessageData = request.data.pop('batchMessages')
+        for message_data in batchMessageData:
+            serializer = MessageSerializer(data=message_data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'message': 'Message Saved'}, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'message': 'Batch Messages Saved'}, status=status.HTTP_201_CREATED)
     else:
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-
+        serializer = MessageSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'Message Saved'}, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

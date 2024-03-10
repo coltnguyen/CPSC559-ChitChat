@@ -8,9 +8,11 @@
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     </head>
     <body>
-        <div class="chat-container">
-            <section class="chat-messages" id="msgBox"></section>
-
+        <div class="main">
+            <div class="chat-container">
+                <section class="chat-messages" id="msgBox"></section>
+            </div>
+            
             <div class="chat-input">
                 <input
                     type="text"
@@ -24,7 +26,7 @@
                 <p class="output"></p>
                 <div id="timestamp" class="timestamp"></div>
             </div>
-
+        </div>
             <!--temporary input box to test displaying received messages. Delect this secetion in the future-->
             <!-- <div class="chat-input">
                 <input
@@ -39,7 +41,6 @@
                 <p class="output"></p>
                 <div id="timestamp" class="timestamp"></div>
             </div> -->
-        </div>
     </body>
 </html>
 
@@ -48,6 +49,8 @@
     var socket = new WebSocket("ws://127.0.0.1:8000/ws/chat/" + roomName + "/");
     var saveMessageURL = new URL("http://127.0.0.1:8000/message/create");
     var getAllMessagesURL = new URL("http://127.0.0.1:8000/message/all/");
+    var messageBuffer = [];
+    let batchTimer;
 
     window.addEventListener('load', function(event) {
 
@@ -116,7 +119,6 @@
         };
         socket.send(JSON.stringify(msg));
 
-
         //Sending message to save to DB
         const saveMessageData = {
             userId: localStorage.getItem("id"),
@@ -125,27 +127,38 @@
             message: input.value,
         };
 
-        fetch(saveMessageURL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json", 
-            },
-            body: JSON.stringify(saveMessageData),
-        })
-            .then((response) => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error("Message Save Failed!");
-                }
-            })
-            .then((data) => {
-                console.log(data);
-            })
-            .catch((error) => alert(error));
+        messageBuffer.push(saveMessageData);
+
+        clearTimeout(batchTimer);
+
+        batchTimer = setTimeout(() => {sendBatch();}, 10000);
 
         input.value = ""; // Clear the input field
     }
+
+    function sendBatch() {
+        if (messageBuffer.length > 0) {
+            fetch(saveMessageURL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json", 
+                },
+                body: JSON.stringify({batchMessages: messageBuffer}),
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error("Message Save Failed!");
+                    }
+                })
+                .then((data) => {
+                    console.log(data);
+                })
+                .catch((error) => alert(error));
+        }
+    }
+
     function displayPreviousMsg(messageSender) {
         const output = document.querySelector("#msgBox");
         const newMsg = document.createElement("p");
