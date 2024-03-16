@@ -42,18 +42,18 @@ class Command(BaseCommand):
                     source_document.pop('_id', None)
 
                     # Check if a document with the same id already exists in the target collection
-                    if target_collection.find_one({'id': document_id}):
-                        # Document with the same id exists, skip the insertion or update
-                        continue
-
-                    # Check if a document with the same chatName already exists in the target collection
-                    chatName = source_document.get('chatName')
-                    if chatName and target_collection.find_one({'chatName': chatName}):
-                        # Document with the same chatName exists, skip the insertion or update
-                        continue
-
-                    # Document does not exist in the target collection, insert it
-                    target_collection.insert_one(source_document)
+                    target_document = target_collection.find_one({'id': document_id})
+                    if target_document:
+                        # Document with the same id exists, overwrite it with the source document
+                        target_collection.replace_one({'id': document_id}, source_document)
+                    else:
+                        # Document does not exist in the target collection, insert it
+                        # Check if a document with the same chatName already exists in the target collection
+                        chatName = source_document.get('chatName')
+                        if chatName and target_collection.find_one({'chatName': chatName}):
+                            # Document with the same chatName exists, skip the insertion or update
+                            continue
+                        target_collection.insert_one(source_document)
                 else:
                     # Handle cases where 'id' is not present, if applicable
                     pass
