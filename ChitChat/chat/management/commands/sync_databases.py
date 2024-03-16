@@ -1,9 +1,19 @@
 from django.core.management.base import BaseCommand
-from pymongo import MongoClient
+from pymongo import MongoClient, UpdateOne
 import logging
+import hashlib
 
 class Command(BaseCommand):
     help = 'Synchronizes data between the main MongoDB and its replica.'
+
+
+    def document_hash(self, document):
+        # Create a copy to avoid modifying the original document
+        doc_copy = document.copy()
+        doc_copy.pop('_id', None)
+        # Convert the document to a string and hash it
+        doc_string = str(doc_copy).encode('utf-8')
+        return hashlib.sha256(doc_string).hexdigest()
 
     def handle(self, *args, **options):
         self.stdout.write(self.style.SUCCESS('Starting synchronization process...'))
@@ -27,6 +37,8 @@ class Command(BaseCommand):
 
     def sync_databases(self, source_db, target_db):
         exclude_collections = ['__schema__', 'django_migrations'] # Add any other collections to exclude
+        bulk_operations = []
+
         for collection_name in source_db.list_collection_names():
             if collection_name in exclude_collections:
                 continue # Skip the synchronization for excluded collections
@@ -44,16 +56,18 @@ class Command(BaseCommand):
                     # Check if a document with the same id already exists in the target collection
                     target_document = target_collection.find_one({'id': document_id})
                     if target_document:
-                        # Document with the same id exists, overwrite it with the source document
-                        target_collection.replace_one({'id': document_id}, source_document)
-                    else:
-                        # Document does not exist in the target collection, insert it
-                        # Check if a document with the same chatName already exists in the target collection
-                        chatName = source_document.get('chatName')
-                        if chatName and target_collection.find_one({'chatName': chatName}):
-                            # Document with the same chatName exists, skip the insertion or update
+                        target_document_no_id = target_document.copy()
+                        target_document_no_id.pop('_id', None)
+
+                        source_doc_hash = self.document_hash(source_document)
+                        target_doc_hash = self.document_hash(target_document_no_id)
+
+                        if source_doc_hash != target_doc_hash:
+                            bulk_operations.append(UpdateOne({'id': document_id}, {'$set': source_document}, upsert=True))
+                        else:
                             continue
-                        target_collection.insert_one(source_document)
+                    else:
+                        bulk_operations.append(UpdateOne({'id': document_id}, {'$set': source_document}, upsert=True))
                 else:
                     # Handle cases where 'id' is not present, if applicable
                     pass
