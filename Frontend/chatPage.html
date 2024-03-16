@@ -49,8 +49,7 @@
     var saveMessageURL = new URL("http://127.0.0.1:8000/message/create");
     var getAllMessagesURL = new URL("http://127.0.0.1:8000/message/all/");
 
-    window.addEventListener('load', function(event) {
-
+    window.addEventListener("load", function (event) {
         const chatroomData = {
             chatroomId: 1,
         };
@@ -58,7 +57,7 @@
         fetch(getAllMessagesURL, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json", 
+                "Content-Type": "application/json",
             },
             body: JSON.stringify(chatroomData), // Convert the data object to a JSON string
         })
@@ -72,8 +71,8 @@
             .then((data) => {
                 console.log(data);
 
-                for (var j = 0; j < data.length; j++){
-                    displayPreviousMsg(data[j])
+                for (var j = 0; j < data.length; j++) {
+                    displayPreviousMsg(data[j]);
                 }
             })
             .catch((error) => alert(error));
@@ -106,29 +105,27 @@
             alert("Please enter a message before sending");
             return;
         }
-
+        const text = input.value;
         //Sending message to websocket
         const user = localStorage.getItem("username");
         const msg = {
             username: user,
-            text: input.value,
+            text: text,
             timestamp: new Date().toLocaleDateString(),
         };
         socket.send(JSON.stringify(msg));
 
-
         //Sending message to save to DB
         const saveMessageData = {
-            userId: localStorage.getItem("id"),
-            userName: localStorage.getItem("username"),
+            userName: user,
             chatroomId: 1,
-            message: input.value,
+            message: text,
         };
 
         fetch(saveMessageURL, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json", 
+                "Content-Type": "application/json",
             },
             body: JSON.stringify(saveMessageData),
         })

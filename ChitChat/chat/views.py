@@ -62,9 +62,9 @@ def loginUser(request):
 
     # Manually check the username and password against the database
     try:
-        _ = User.objects.get(userName=username, password=password)
+        user = User.objects.get(userName=username, password=password)
         # If the user is found, return a success response
-        return JsonResponse({"username": username, "id":_.id, "chatroom": "global"}, status=status.HTTP_200_OK)
+        return JsonResponse({"username": username, "chatroom": "global"}, status=status.HTTP_200_OK)
     except User.DoesNotExist:
         # If the user is not found, return an unauthorized response
         return Response(status=status.HTTP_401_UNAUTHORIZED)

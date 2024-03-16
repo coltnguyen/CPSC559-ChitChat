@@ -16,8 +16,8 @@ class UserSerializer(serializers.ModelSerializer):
 class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
-        fields = ['userId', 'userName', 'chatroomId', 'message', 'date']
-    
+        fields = ['userName', 'chatroomId', 'message', 'date']
+
     def create(self, validated_data):
         message = Message.objects.create(**validated_data)
         message.save()

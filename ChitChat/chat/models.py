@@ -34,7 +34,6 @@ class User(ReplicatableModel):
         # self.save()  # Save the user instance to the database
 
 class Message(ReplicatableModel):
-    userId = models.IntegerField()
     userName = models.CharField(max_length=50)
     chatroomId = models.IntegerField()
     message = models.CharField(max_length=500)
