@@ -70,7 +70,6 @@
             })
             .then((data) => {
                 console.log(data);
-
                 for (var j = 0; j < data.length; j++) {
                     displayPreviousMsg(data[j]);
                 }
@@ -153,7 +152,8 @@
         user.textContent = messageSender.userName;
         newMsg.textContent = messageSender.message;
 
-        if (messageSender.userId != localStorage.getItem("id")) {
+        const username = localStorage.getItem("username");
+        if (messageSender.userName !== username) {
             user.classList.add("username-rec");
             time.classList.add("timestamp-rec");
             newMsg.classList.add("chat-bubble-rec");
