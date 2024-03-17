@@ -8,6 +8,8 @@ class ReplicatableModel(models.Model):
 
     def save(self, *args, **kwargs):
         # Extract 'using' from kwargs if it exists
+        using = kwargs.pop('using', None)
+
         try:
             super(ReplicatableModel, self).save(using='default', *args, **kwargs)
         except Exception as e:
@@ -20,6 +22,11 @@ class ReplicatableModel(models.Model):
         except Exception as e:
             print(f"Error saving to replica database: {e}")
             return
+
+        # If 'using' was originally provided, restore it
+        if using is not None:
+            kwargs['using'] = using
+
 
 class User(ReplicatableModel):
     # Define the fields for the User model
