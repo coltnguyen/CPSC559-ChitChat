@@ -5,7 +5,7 @@ import logging
 import hashlib
 
 class Command(BaseCommand):
-    help = 'Synchronizes data between the main MongoDB and its replica.'
+    help = 'Forcefully synchronizes data both databases.'
 
     def document_hash(self, document):
         # Create a copy to avoid modifying the original document
