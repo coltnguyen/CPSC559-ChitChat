@@ -17,3 +17,5 @@ accesslog = 'access.log'
 
 # Error log file path
 errorlog = 'error.log'
+
+loglevel = 'debug.log'
