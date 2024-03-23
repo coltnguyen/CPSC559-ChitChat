@@ -9,6 +9,7 @@ workers = 4
 # Worker class for handling ASGI applications (Uvicorn in this case)
 worker_class = 'uvicorn.workers.UvicornWorker'
 
+
 # Log level (e.g., debug, info, warning, error, critical)
 loglevel = 'info'
 
@@ -18,4 +19,3 @@ accesslog = 'access.log'
 # Error log file path
 errorlog = 'error.log'
 
-loglevel = 'debug.log'

@@ -5,8 +5,9 @@ import logging
 import hashlib
 
 class Command(BaseCommand):
-    help = 'Forcefully synchronizes data both databases.'
 
+    help = 'Forcefully synchronizes data both databases.'
+  
     def document_hash(self, document):
         # Create a copy to avoid modifying the original document
         doc_copy = document.copy()
@@ -37,19 +38,23 @@ class Command(BaseCommand):
 
     def sync_databases(self, source_db, target_db):
         include_collections = ['chat_message', 'chat_user']
+
         exclude_collections = ['__schema__', 'django_migrations']  # Add any other collections to exclude
 
         collection_names = [name for name in source_db.list_collection_names() if name in include_collections and name not in exclude_collections]
 
         for collection_name in collection_names:
             print(f"Synchronizing collection: {collection_name}")  # Print the collection being synchronized
+
             source_collection = source_db[collection_name]
             target_collection = target_db[collection_name]
 
             source_ids = set()
+
             bulk_operations = []  # Reset bulk operations for each collection
 
             for source_document in source_collection.find():
+
                 document_id = source_document.get('id')
                 if document_id is not None:
                     source_ids.add(document_id)
@@ -63,6 +68,7 @@ class Command(BaseCommand):
                         target_doc_hash = self.document_hash(target_document)
 
                         if source_doc_hash != target_doc_hash:
+
                             print(f"Difference found for document id: {document_id} in collection: {collection_name}. Updating in target database.")
                             bulk_operations.append(UpdateOne({'id': document_id}, {'$set': source_document}, upsert=True))
                     else:
@@ -87,3 +93,4 @@ class Command(BaseCommand):
                 except Exception as e:
                     print(f"Error during synchronization for collection '{collection_name}': {e}")
                     raise
+

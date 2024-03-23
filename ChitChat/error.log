@@ -1,0 +1,53 @@
+[2024-03-21 14:13:47 -0600] [71567] [INFO] Starting gunicorn 21.2.0
+[2024-03-21 14:13:47 -0600] [71567] [INFO] Listening at: http://0.0.0.0:8000 (71567)
+[2024-03-21 14:13:47 -0600] [71567] [INFO] Using worker: uvicorn.workers.UvicornWorker
+[2024-03-21 14:13:47 -0600] [71568] [INFO] Booting worker with pid: 71568
+[2024-03-21 14:13:47 -0600] [71569] [INFO] Booting worker with pid: 71569
+[2024-03-21 14:13:47 -0600] [71570] [INFO] Booting worker with pid: 71570
+[2024-03-21 14:13:47 -0600] [71571] [INFO] Booting worker with pid: 71571
+[2024-03-21 20:13:48 +0000] [71571] [INFO] Started server process [71571]
+[2024-03-21 20:13:48 +0000] [71571] [INFO] Waiting for application startup.
+[2024-03-21 20:13:48 +0000] [71570] [INFO] Started server process [71570]
+[2024-03-21 20:13:48 +0000] [71569] [INFO] Started server process [71569]
+[2024-03-21 20:13:48 +0000] [71568] [INFO] Started server process [71568]
+[2024-03-21 20:13:48 +0000] [71570] [INFO] Waiting for application startup.
+[2024-03-21 20:13:48 +0000] [71569] [INFO] Waiting for application startup.
+[2024-03-21 20:13:48 +0000] [71571] [INFO] ASGI 'lifespan' protocol appears unsupported.
+[2024-03-21 20:13:48 +0000] [71571] [INFO] Application startup complete.
+[2024-03-21 20:13:48 +0000] [71568] [INFO] Waiting for application startup.
+[2024-03-21 20:13:48 +0000] [71570] [INFO] ASGI 'lifespan' protocol appears unsupported.
+[2024-03-21 20:13:48 +0000] [71569] [INFO] ASGI 'lifespan' protocol appears unsupported.
+[2024-03-21 20:13:48 +0000] [71570] [INFO] Application startup complete.
+[2024-03-21 20:13:48 +0000] [71569] [INFO] Application startup complete.
+[2024-03-21 20:13:48 +0000] [71568] [INFO] ASGI 'lifespan' protocol appears unsupported.
+[2024-03-21 20:13:48 +0000] [71568] [INFO] Application startup complete.
+[2024-03-21 20:14:24 +0000] [71570] [INFO] ('127.0.0.1', 61379) - "WebSocket /ws/chat/global/" [accepted]
+[2024-03-21 20:14:24 +0000] [71570] [INFO] connection open
+[2024-03-21 20:14:24 +0000] [71570] [INFO] connection closed
+[2024-03-21 20:14:36 +0000] [71568] [INFO] ('127.0.0.1', 61460) - "WebSocket /ws/chat/global/" [accepted]
+[2024-03-21 20:14:36 +0000] [71568] [INFO] connection open
+[2024-03-21 20:14:37 +0000] [71568] [INFO] connection closed
+[2024-03-21 20:14:37 +0000] [71570] [INFO] ('127.0.0.1', 61480) - "WebSocket /ws/chat/global/" [accepted]
+[2024-03-21 20:14:37 +0000] [71570] [INFO] connection open
+[2024-03-21 20:14:40 +0000] [71570] [INFO] connection closed
+[2024-03-21 20:14:40 +0000] [71568] [INFO] ('127.0.0.1', 61503) - "WebSocket /ws/chat/global/" [accepted]
+[2024-03-21 20:14:40 +0000] [71568] [INFO] connection open
+[2024-03-21 20:14:40 +0000] [71568] [INFO] connection closed
+[2024-03-21 14:14:41 -0600] [71567] [INFO] Handling signal: int
+[2024-03-21 20:14:41 +0000] [71568] [INFO] Shutting down
+[2024-03-21 20:14:41 +0000] [71568] [INFO] Error while closing socket [Errno 9] Bad file descriptor
+[2024-03-21 20:14:42 +0000] [71569] [INFO] Shutting down
+[2024-03-21 20:14:42 +0000] [71571] [INFO] Shutting down
+[2024-03-21 20:14:42 +0000] [71569] [INFO] Error while closing socket [Errno 9] Bad file descriptor
+[2024-03-21 20:14:42 +0000] [71571] [INFO] Error while closing socket [Errno 9] Bad file descriptor
+[2024-03-21 20:14:42 +0000] [71570] [INFO] Shutting down
+[2024-03-21 20:14:42 +0000] [71570] [INFO] Error while closing socket [Errno 9] Bad file descriptor
+[2024-03-21 20:14:42 +0000] [71568] [INFO] Finished server process [71568]
+[2024-03-21 20:14:42 +0000] [71568] [INFO] Worker exiting (pid: 71568)
+[2024-03-21 20:14:42 +0000] [71571] [INFO] Finished server process [71571]
+[2024-03-21 20:14:42 +0000] [71569] [INFO] Finished server process [71569]
+[2024-03-21 20:14:42 +0000] [71571] [INFO] Worker exiting (pid: 71571)
+[2024-03-21 20:14:42 +0000] [71569] [INFO] Worker exiting (pid: 71569)
+[2024-03-21 20:14:42 +0000] [71570] [INFO] Finished server process [71570]
+[2024-03-21 20:14:42 +0000] [71570] [INFO] Worker exiting (pid: 71570)
+[2024-03-21 14:14:42 -0600] [71567] [INFO] Shutting down: Master
