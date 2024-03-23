@@ -1,3 +1,0 @@
-127.0.0.1:61380 - "OPTIONS /message/all/ HTTP/1.1" 200
-127.0.0.1:61414 - "OPTIONS /login/ HTTP/1.1" 200
-127.0.0.1:61439 - "POST /login/ HTTP/1.1" 200
