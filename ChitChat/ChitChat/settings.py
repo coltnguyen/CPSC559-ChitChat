@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
 
 import os
@@ -138,7 +139,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
+CELERY_BEAT_SCHEDULE = {
+    'check_default_database': {
+        'task': 'chat.tasks.run_leader_election',
+        'schedule': timedelta(secondes=10),
+    }
+}
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
