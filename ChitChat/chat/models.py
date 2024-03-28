@@ -42,3 +42,10 @@ class Message(ReplicatableModel):
 
 class Chatroom(ReplicatableModel):
     chatName = models.CharField(max_length=50, unique=True)
+    
+class LeaderElection(models.Model):
+    nodeid = models.IntegerField(primary_key=True)
+    isLeader = models.BooleanField(defual=False)
+    
+
+
