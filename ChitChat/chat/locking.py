@@ -1,41 +1,33 @@
-from djongo import models
+from .models import Lock
 
-class Lock(models.Model):
-    name = models.CharField(max_length=255, unique=True)
-    acquired_by = models.CharField(max_length=255)
-    acquired_at = models.DateTimeField(auto_now_add=True)
+class MongoDbWriteLock:
 
-    def save(self, *args, **kwargs):
-        super().save(using='locks', *args, **kwargs)
+    # Check is a lock already exists.
+    # The lock record must exist in all **active** databases for this
+    # to be true.
+    def already_acquired():
+        lock_main = Lock.objects.using('default').filter(name="mongo_db_write_lock").exists()
+        lock_replica = Lock.objects.using('replica').filter(name="mongo_db_write_lock").exists()
+        return lock_main or lock_replica
 
-def acquire_lock(name, acquired_by):
-    try:
-        lock = Lock.objects.using('locks').create(name=name, acquired_by=acquired_by)
-        return (True, lock)
-    except Exception as e:
-        return (False, e)
+    def acquire_lock(acquired_by):
+        try:
+            if MongoDbWriteLock.already_acquired():
+                return False
+            lock_instance = Lock.objects.create(name="mongo_db_write_lock", acquired_by=acquired_by)
+            lock_instance.save()
+            return True
+        except Exception:
+            return False
 
-def release_lock(name):
-    try:
-        lock_instance = Lock.objects.using('locks').filter(name=name).first()
-        if lock_instance:
-            lock_instance.delete()
-            return (True, None)
-        else:
-            raise Exception('Lock not found.')
-    except Exception as e:
-        return (False, e)
-
-
-# For testing pruposes only!!!!
-from rest_framework import serializers
-
-class LockSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Lock
-        fields = ['name', 'acquired_by']
-
-    def create(self, validated_data):
-        lock = Lock.objects.create(**validated_data)
-        lock.save()
-        return lock
+    def release_lock(acquired_by):
+        try:
+            if not MongoDbWriteLock.already_acquired():
+                return False
+            lock_instance = Lock.objects.filter(name="mongo_db_write_lock", acquired_by=acquired_by).first()
+            if lock_instance:
+                lock_instance.delete()
+                return True
+        except Exception:
+            pass
+        return False

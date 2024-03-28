@@ -21,6 +21,12 @@ class ReplicatableModel(models.Model):
             print(f"Error saving to replica database: {e}")
             return
 
+
+    def delete(self, *args, **kwargs):
+        self.__class__.objects.using('default').filter(pk=self.pk).delete()
+        self.__class__.objects.using('replica').filter(pk=self.pk).delete()
+
+
 class User(ReplicatableModel):
     # Define the fields for the User model
     firstName = models.CharField(max_length=50)  # User's first name
@@ -42,3 +48,8 @@ class Message(ReplicatableModel):
 
 class Chatroom(ReplicatableModel):
     chatName = models.CharField(max_length=50, unique=True)
+
+class Lock(ReplicatableModel):
+    name = models.CharField(max_length=255, unique=True)
+    acquired_by = models.CharField(max_length=255)
+    acquired_at = models.DateTimeField(auto_now_add=True)

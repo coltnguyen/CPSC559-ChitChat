@@ -8,6 +8,7 @@ urlpatterns = [
     path('message/create', views.createMessage, name='createMessage'),
     path('message/all/', views.allMessages, name='allMessages'),
 
-    # For testing purposes only!!!!!!!
-    path('locks/', views.test_locking, name='lock'),
+    # FOR TESTING PURPOSES ONLY!!!!
+    path('locks/acquire/', views.test_acquire_lock, name='test_acquire_lock'),
+    path('locks/release/', views.test_release_lock, name='test_release_lock'),
 ]

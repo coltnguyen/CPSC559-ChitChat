@@ -10,7 +10,7 @@ import json
 import logging
 from functools import wraps
 import time
-from .locking import Lock, LockSerializer, acquire_lock, release_lock
+from .locking import MongoDbWriteLock
 
 logger = logging.getLogger(__name__)
 
@@ -109,11 +109,20 @@ def createMessage(request):
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+# FOR TESTING PURPOSES ONLY!!!!
 @api_view(['POST'])
-def test_locking(request):
-    serializer = LockSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
+def test_acquire_lock(request):
+    server_id = request.data.get('server_id')
+    if MongoDbWriteLock.acquire_lock(server_id):
         return Response({'message': 'Lock acquired.'}, status=status.HTTP_201_CREATED)
     else:
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'message': 'Failed to acquire lock.'}, status=status.HTTP_400_BAD_REQUEST)
+
+# FOR TESTING PURPOSES ONLY!!!!
+@api_view(['POST'])
+def test_release_lock(request):
+    server_id = request.data.get('server_id')
+    if MongoDbWriteLock.release_lock(server_id):
+        return Response({'message': 'Lock released.'}, status=status.HTTP_201_CREATED)
+    else:
+        return Response({'message': 'Failed to release lock.'}, status=status.HTTP_400_BAD_REQUEST)

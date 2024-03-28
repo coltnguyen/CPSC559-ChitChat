@@ -115,14 +115,6 @@ DATABASES = {
             'host': 'mongodb+srv://coltvnguyen:Legitpassword12@chitchat-cluster-1.gjvrsgz.mongodb.net/?retryWrites=true&w=majority'
         }
     },
-    'locks': {
-        'ENGINE': 'djongo',
-        'NAME': 'chitchat_locks',
-        'ENFORCE_SCHEMA': False,
-        'CLIENT': {
-            'host': 'mongodb+srv://coltvnguyen:Legitpassword12@chitchat-cluster-1.gjvrsgz.mongodb.net/?retryWrites=true&w=majority'
-        }
-    },
 }
 
 # Path to our router class
