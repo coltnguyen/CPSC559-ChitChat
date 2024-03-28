@@ -2,5 +2,7 @@
 venv/
 myenv/
 .myenv/
+.ChitChat/chat/__pycache__/
 ChitChat/chat/__pycache__/
-ChitChat/__pycache__/
+.ChitChat/ChitChat/__pycache__/
+ChitChat/ChitChat/__pycache__/
