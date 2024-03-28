@@ -7,4 +7,7 @@ urlpatterns = [
     path('login/', views.loginUser, name='login'),
     path('message/create', views.createMessage, name='createMessage'),
     path('message/all/', views.allMessages, name='allMessages'),
+
+    # For testing purposes only!!!!!!!
+    path('locks/', views.test_locking, name='lock'),
 ]

@@ -10,6 +10,7 @@ import json
 import logging
 from functools import wraps
 import time
+from .locking import Lock, LockSerializer, acquire_lock, release_lock
 
 logger = logging.getLogger(__name__)
 
@@ -105,5 +106,14 @@ def createMessage(request):
     if serializer.is_valid():
         serializer.save()
         return Response({'message': 'Message Saved'}, status=status.HTTP_201_CREATED)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def test_locking(request):
+    serializer = LockSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'message': 'Lock acquired.'}, status=status.HTTP_201_CREATED)
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
