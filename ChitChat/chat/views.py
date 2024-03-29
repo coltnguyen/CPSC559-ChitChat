@@ -42,8 +42,6 @@ def retry_on_failure(attempts=3, delay=1, exceptions=(Exception,)):
         return wrapper
     return decorator
 
-
-
 # Create your views here.
 def chat(request):
     return render(request, 'chat/chatroom.html')
@@ -80,7 +78,9 @@ def registerUser(request):
 
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
+        MongoDbWriteLock.acquire_lock("server")
         serializer.save()
+        MongoDbWriteLock.release_lock("server")
         return Response({'message': 'Account Created'}, status=status.HTTP_201_CREATED)
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -104,7 +104,9 @@ def allMessages(request):
 def createMessage(request):
     serializer = MessageSerializer(data=request.data)
     if serializer.is_valid():
+        MongoDbWriteLock.acquire_lock("server")
         serializer.save()
+        MongoDbWriteLock.release_lock("server")
         return Response({'message': 'Message Saved'}, status=status.HTTP_201_CREATED)
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -112,7 +114,7 @@ def createMessage(request):
 # FOR TESTING PURPOSES ONLY!!!!
 @api_view(['POST'])
 def test_acquire_lock(request):
-    server_id = request.data.get('server_id')
+    server_id = request.worker_id
     if MongoDbWriteLock.acquire_lock(server_id):
         return Response({'message': 'Lock acquired.'}, status=status.HTTP_201_CREATED)
     else:
@@ -121,8 +123,8 @@ def test_acquire_lock(request):
 # FOR TESTING PURPOSES ONLY!!!!
 @api_view(['POST'])
 def test_release_lock(request):
-    server_id = request.data.get('server_id')
+    server_id = request.worker_id
     if MongoDbWriteLock.release_lock(server_id):
-        return Response({'message': 'Lock released.'}, status=status.HTTP_201_CREATED)
+        return Response({'message': 'Lock released.'}, status=status.HTTP_200_OK)
     else:
         return Response({'message': 'Failed to release lock.'}, status=status.HTTP_400_BAD_REQUEST)
