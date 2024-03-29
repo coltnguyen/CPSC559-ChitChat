@@ -78,9 +78,9 @@ def registerUser(request):
 
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
-        MongoDbWriteLock.acquire_lock("server")
+        MongoDbWriteLock.acquire_lock(request.worker_id)
         serializer.save()
-        MongoDbWriteLock.release_lock("server")
+        MongoDbWriteLock.release_lock(request.worker_id)
         return Response({'message': 'Account Created'}, status=status.HTTP_201_CREATED)
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -104,9 +104,9 @@ def allMessages(request):
 def createMessage(request):
     serializer = MessageSerializer(data=request.data)
     if serializer.is_valid():
-        MongoDbWriteLock.acquire_lock("server")
+        MongoDbWriteLock.acquire_lock(request.worker_id)
         serializer.save()
-        MongoDbWriteLock.release_lock("server")
+        MongoDbWriteLock.release_lock(request.worker_id)
         return Response({'message': 'Message Saved'}, status=status.HTTP_201_CREATED)
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
