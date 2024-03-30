@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+from celery.schedules import crontab
 
 import os
 
@@ -27,6 +28,19 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['192.168.50.152', 'localhost', '127.0.0.1']
 
+# Celery configuration
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Replace with your Redis broker URL
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/1'  # Replace with your Redis backend URL
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+CELERY_BEAT_SCHEDULE = {
+    'sync_databases_every_5_minutes': {
+        'task': 'chat.tasks.run_sync_databases',  # Replace 'your_app' with your app name
+        'schedule': crontab(minute='*/5'),  # Run every 5 minutes
+    },
+}
 
 # Application definition
 
@@ -41,6 +55,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'channels',
+    'background_task',
+    'celery',
 ]
 
 # Channels
@@ -119,6 +135,16 @@ DATABASES = {
 
 # Path to our router class
 DATABASE_ROUTERS = ['chat.routers.ReplicaRouter']
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
