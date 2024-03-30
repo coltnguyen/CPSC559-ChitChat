@@ -7,6 +7,10 @@ import datetime
 import concurrent.futures
 
 def run_synchronization():
+    """
+    Entry point function to run the synchronization process.
+    It creates an instance of the Command class and calls its handle method.
+    """
     command = Command()
     command.handle()
 
@@ -14,6 +18,17 @@ class Command(BaseCommand):
     help = 'Forcefully synchronizes data both databases.'
 
     def document_hash(self, document):
+        """
+        Calculates the hash of a document.
+        It creates a copy of the document, removes the '_id' field, converts the document to a string,
+        and calculates the SHA-256 hash of the string.
+
+        Args:
+            document (dict): The document to calculate the hash for.
+
+        Returns:
+            str: The SHA-256 hash of the document.
+        """
         # Create a copy to avoid modifying the original document
         doc_copy = document.copy()
         doc_copy.pop('_id', None)
@@ -22,6 +37,12 @@ class Command(BaseCommand):
         return hashlib.sha256(doc_string).hexdigest()
 
     def handle(self, *args, **options):
+        """
+        The main method of the Command class.
+        It connects to the main and replica databases, synchronizes data from main to replica,
+        and optionally synchronizes data from replica to main.
+        It handles exceptions and logs any errors that occur during the synchronization process.
+        """
         self.stdout.write(self.style.SUCCESS('Starting synchronization process...'))
         try:
             # Connect to both databases
@@ -42,12 +63,21 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR('Synchronization failed.'))
 
     def sync_databases(self, source_db, target_db):
+        """
+        Synchronizes data between two databases.
+        It retrieves the collection names to be synchronized based on the include and exclude lists.
+        It uses a ThreadPoolExecutor to process each collection in parallel.
+
+        Args:
+            source_db (pymongo.database.Database): The source database.
+            target_db (pymongo.database.Database): The target database.
+        """
         include_collections = ['chat_message', 'chat_user']
         exclude_collections = ['__schema__', 'django_migrations']
 
         collection_names = [name for name in source_db.list_collection_names() if name in include_collections and name not in exclude_collections]
 
-        # Use ThreadPoolExecutor to process collections in parallel
+        # Using ThreadPoolExecutor to process collections in parallel
         with concurrent.futures.ThreadPoolExecutor(max_workers=len(collection_names)) as executor:
             future_to_collection = {executor.submit(self.sync_collection, source_db, target_db, collection_name): collection_name for collection_name in collection_names}
             for future in concurrent.futures.as_completed(future_to_collection):
@@ -58,6 +88,17 @@ class Command(BaseCommand):
                     print(f"{collection_name} generated an exception: {exc}")
 
     def sync_collection(self, source_db, target_db, collection_name):
+        """
+        Synchronizes data for a specific collection between the source and target databases.
+        It retrieves the latest 10,000 documents from the source collection, compares them with the target collection,
+        and performs necessary update or insert operations using bulk write operations.
+        It uses a MongoDB transaction to ensure data consistency.
+
+        Args:
+            source_db (pymongo.database.Database): The source database.
+            target_db (pymongo.database.Database): The target database.
+            collection_name (str): The name of the collection to synchronize.
+        """
         print(f"Synchronizing collection: {collection_name}")
         source_collection = source_db[collection_name]
         target_collection = target_db[collection_name]
@@ -68,8 +109,9 @@ class Command(BaseCommand):
         with target_db.client.start_session() as session:
             with session.start_transaction():
                 while True:
+                    # Sort by 'id' in descending order and limit to the latest 10,000 items
                     query = {} if last_id is None else {'id': {'$gt': last_id}}
-                    source_documents = list(source_collection.find(query).limit(batch_size))
+                    source_documents = list(source_collection.find(query).sort('_id', -1).limit(10000))
 
                     if not source_documents:
                         break
@@ -108,6 +150,7 @@ class Command(BaseCommand):
                             session.abort_transaction()
                             raise
 
-                    last_id = source_documents[-1]['id']
+                    # Since we're now working with a fixed set of the latest 10,000 items, break after processing them
+                    break
 
                 session.commit_transaction()
