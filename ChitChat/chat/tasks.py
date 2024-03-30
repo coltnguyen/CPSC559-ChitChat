@@ -5,9 +5,15 @@ from redis.exceptions import LockError
 from .management.commands.sync_databases import run_synchronization
 
 logger = get_task_logger(__name__)
-redis_client = Redis()  # Configure your Redis client as needed
+redis_client = Redis(host='192.168.50.152', port=6379, db=1)
 
-@shared_task(bind=True, max_retries=3, retry_backoff=True, retry_backoff_max=60)
+
+@shared_task(
+    bind=True,  # This binds the first argument of the function to the task instance (self)
+    max_retries=3,  # Maximum number of retries before giving up
+    retry_backoff=True,  # Enables exponential backoff delay, doubling the retry delay for each retry
+    retry_backoff_max=60  # Maximum number of seconds the retry delay can reach
+)
 def run_sync_databases(self):
     lock_id = 'sync_databases_lock'
     have_lock = False
