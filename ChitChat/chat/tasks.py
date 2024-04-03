@@ -5,7 +5,7 @@ from redis.exceptions import LockError
 from .management.commands.sync_databases import run_synchronization
 
 logger = get_task_logger(__name__)
-redis_client = Redis(host='192.168.50.152', port=6379, db=1)
+redis_client = Redis(host='10.13.151.7', port=6379, db=1)
 
 
 @shared_task(
