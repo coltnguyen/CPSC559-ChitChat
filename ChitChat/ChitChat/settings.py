@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-82^qc9ol+p)+=9bjo%)6h5_5b8n-0%+57od+c2xe+%*jf!+gzh
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.50.152', 'localhost', '127.0.0.1', '0.0.0.0', '10.13.151.7']
+ALLOWED_HOSTS = ['192.168.50.152', 'localhost', '127.0.0.1', '0.0.0.0', '10.13.151.7', '10.13.98.110']
 
 # Celery configuration
 CELERY_BROKER_URL = 'redis://10.13.151.7:6379/0'  # Redis broker URL
