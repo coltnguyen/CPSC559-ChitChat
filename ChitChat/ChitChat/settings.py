@@ -29,8 +29,8 @@ DEBUG = True
 ALLOWED_HOSTS = ['192.168.50.152', 'localhost', '127.0.0.1']
 
 # Celery configuration
-CELERY_BROKER_URL = 'redis://192.168.50.152:6379/0'  # Replace with your Redis broker URL
-CELERY_RESULT_BACKEND = 'redis://192.168.50.152:6379/1'  # Replace with your Redis backend URL
+CELERY_BROKER_URL = 'redis://192.168.50.152:6379/0'  # Redis broker URL
+CELERY_RESULT_BACKEND = 'redis://192.168.50.152:6379/1'  # Redis backend URL
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
