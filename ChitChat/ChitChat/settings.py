@@ -37,7 +37,7 @@ CELERY_RESULT_SERIALIZER = 'json'
 
 CELERY_BEAT_SCHEDULE = {
     'sync_databases_every_5_minutes': {
-        'task': 'chat.tasks.run_sync_databases',  # Replace 'your_app' with your app name
+        'task': 'chat.tasks.run_sync_databases',
         'schedule': crontab(minute='*/5'),  # Run every 5 minutes
     },
 }
