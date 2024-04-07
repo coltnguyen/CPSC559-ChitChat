@@ -7,10 +7,10 @@ import time
 from .management.commands.sync_databases import run_synchronization
 
 logger = get_task_logger(__name__)
-redis_client = Redis(host='10.13.151.7', port=6379, db=0)
+redis_client = Redis(host='192.168.50.152', port=6379, db=0)
 
 redlock = Redlock([
-    {'host': '10.13.151.7', 'port': 6379, 'db': 0}
+    {'host': '192.168.50.152', 'port': 6379, 'db': 0}
 ])
 
 @shared_task(
@@ -33,7 +33,11 @@ def run_sync_databases(self):
 
             def heartbeat():
                 while not sync_completed.is_set():
-                    redlock.extend(lock, additional_time=45000)  # Extend the lock by 45 seconds (in milliseconds)
+                    try:
+                        redlock.extend(lock, additional_time=45000)  # Extend the lock by 45 seconds (in milliseconds)
+                    except Exception as e:
+                        logger.error(f'Error extending lock: {e}')
+                        break
                     time.sleep(30)  # Sleep for 30 seconds before the next heartbeat
 
             heartbeat_thread = threading.Thread(target=heartbeat)
