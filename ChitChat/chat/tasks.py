@@ -1,12 +1,18 @@
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from redis import Redis
-from redis.exceptions import LockError
+from redlock import Redlock
+import threading
+import time
 from .management.commands.sync_databases import run_synchronization
 
 logger = get_task_logger(__name__)
-redis_client = Redis(host='10.13.151.7', port=6379, db=1)
+redis_client = Redis(host='192.168.50.152', port=6379, db=0)
 
+# Create a Redlock instance with a single Redis server
+redlock = Redlock([
+    {'host': '192.168.50.152', 'port': 6379, 'db': 0}
+])
 
 @shared_task(
     bind=True,  # This binds the first argument of the function to the task instance (self)
@@ -16,19 +22,34 @@ redis_client = Redis(host='10.13.151.7', port=6379, db=1)
 )
 def run_sync_databases(self):
     lock_id = 'sync_databases_lock'
+    lock_ttl = 300000  # Lock TTL in milliseconds (5 minutes)
     have_lock = False
-    lock = redis_client.lock(lock_id, timeout=300)  # Lock for 5 minutes
+
     try:
-        have_lock = lock.acquire(blocking=False)
-        if have_lock:
+        # Acquire the lock using Redlock
+        lock = redlock.lock(lock_id, lock_ttl)
+        if lock:
+            have_lock = True
             logger.info('Acquired lock. Running synchronization...')
+
+            # Start a separate thread to periodically extend the lock's TTL
+            def heartbeat():
+                while have_lock:
+                    redlock.extend(lock, additional_time=60000)  # Extend the lock by 1 minute
+                    time.sleep(30)  # Sleep for 30 seconds before the next heartbeat
+
+            heartbeat_thread = threading.Thread(target=heartbeat)
+            heartbeat_thread.start()
+
             run_synchronization()
             logger.info('Synchronization completed.')
         else:
-            logger.info('Lock already acquired by another instance. Skipping synchronization.')
-    except LockError as e:
+            logger.info('Failed to acquire lock. Skipping synchronization.')
+    except Exception as e:
         logger.error(f'Error acquiring lock: {e}')
         raise self.retry(exc=e)
     finally:
         if have_lock:
-            lock.release()
+            redlock.unlock(lock)
+            have_lock = False  # Set the flag to stop the heartbeat thread
+            heartbeat_thread.join()  # Wait for the heartbeat thread to finish

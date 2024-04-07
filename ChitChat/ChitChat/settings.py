@@ -29,8 +29,8 @@ DEBUG = True
 ALLOWED_HOSTS = ['192.168.50.152', 'localhost', '127.0.0.1', '0.0.0.0', '10.13.151.7', '10.13.98.110', '10.13.98.39']
 
 # Celery configuration
-CELERY_BROKER_URL = 'redis://10.13.151.7:6379/0'  # Redis broker URL
-CELERY_RESULT_BACKEND = 'redis://10.13.151.7:6379/1'  # Redis backend URL
+CELERY_BROKER_URL = 'redis://192.168.50.152:6379/0'  # Redis broker URL
+CELERY_RESULT_BACKEND = 'redis://192.168.50.152:6379/1'  # Redis backend URL
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
@@ -138,7 +138,7 @@ DATABASE_ROUTERS = ['chat.routers.ReplicaRouter']
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://10.13.151.7:6379/1",
+        "LOCATION": "redis://192.168.50.152:6379/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
