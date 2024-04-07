@@ -35,7 +35,7 @@ def run_sync_databases(self):
             # Start a separate thread to periodically extend the lock's TTL
             def heartbeat():
                 while have_lock:
-                    redlock.extend(lock, additional_time=60000)  # Extend the lock by 1 minute
+                    redlock.extend(lock, additional_time=45000)  # Extend the lock by 45 seconds minute (milliseconds)
                     time.sleep(30)  # Sleep for 30 seconds before the next heartbeat
 
             heartbeat_thread = threading.Thread(target=heartbeat)
