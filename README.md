@@ -39,21 +39,6 @@ Navigate to ChitChat main directory:
 To install requirements, run:
 `pip install -r requirements.txt`
 
-### Step 1: Initialize Redis
-`redis-server --bind <insert-ip-here> --protected-mode no`
-
-### Step 2: Initialize Celery Worker
-
-In two separate terminals, run:
-`celery -A ChitChat.celery:app worker --loglevel=info`
-`celery -A ChitChat.celery:app beat`
-
-(Optional) To activate monitoring:
-`celery -A ChitChat.celery:app flower`
-
-### Step 3: Initialize Uvicorn WebSocket
-`uvicorn ChitChat.asgi:application --workers=4 --host <insert-ip-here> --port 8000`
-
 ## Setup Instructions
 
 1. **Install Dependencies**
@@ -78,8 +63,20 @@ In two separate terminals, run:
 5. **Start the Django Development Server**
    - `python manage.py runserver`
 
-6. **Start Celery Worker**
-   - `celery -A ChitChat worker --beat --scheduler django --loglevel=info`
+6. **Initialize Redis**
+`redis-server --bind <insert-ip-here> --protected-mode no`
+
+7. **Initialize Celery Worker**
+
+8. **In two separate terminals, run:**
+`celery -A ChitChat.celery:app worker --loglevel=info`
+`celery -A ChitChat.celery:app beat`
+
+9. **(Optional) To activate monitoring:**
+`celery -A ChitChat.celery:app flower`
+
+10.**Initialize Uvicorn WebSocket**
+`uvicorn ChitChat.asgi:application --workers=4 --host <insert-ip-here> --port 8000`
 
 ## Key Components
 
