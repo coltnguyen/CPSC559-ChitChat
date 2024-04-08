@@ -33,10 +33,10 @@ ChitChat is a Django-based web application that provides a real-time chat functi
 Navigate to ChitChat main directory and run
 `pip install -r requirements.txt`
 
-# Step 1: Initialize Redis
+### Step 1: Initialize Redis
 `redis-server --bind <insert-ip-here> --protected-mode no`
 
-# Step 2: Intialize Celery Worker
+### Step 2: Intialize Celery Worker
 
 In two separate terminals, run:
 `celery -A ChitChat.celery:app worker --loglevel=info`
@@ -45,5 +45,5 @@ In two separate terminals, run:
 (Optional) To activate monitoring:
 `celery -A ChitChat.celery:app flower`
 
-# Step 3: Intialize Uvicorn WebSocket
+### Step 3: Intialize Uvicorn WebSocket
 `uvicorn ChitChat.asgi:application --workers=4 --host <insert-ip-here> --port 8000`
