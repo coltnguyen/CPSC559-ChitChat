@@ -1,17 +1,39 @@
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from redis import Redis
-from redlock import Redlock
 import threading
 import time
 from .management.commands.sync_databases import run_synchronization
+import os
 
 logger = get_task_logger(__name__)
 redis_client = Redis(host='192.168.50.152', port=6379, db=0)
 
-redlock = Redlock([
-    {'host': '192.168.50.152', 'port': 6379, 'db': 0}
-])
+instance_id = os.getpid()  # Use worker PID as the instance ID
+
+def is_leader():
+    current_leader_id = redis_client.get('leader_id')
+    if current_leader_id is None:
+        # If there's no leader, declare this instance as the leader
+        redis_client.set('leader_id', instance_id, ex=60)  # Leader ID expires after 60 seconds
+        return True
+    else:
+        current_leader_id = int(current_leader_id.decode())
+        if instance_id > current_leader_id:
+            # If this instance has a higher PID, attempt to declare it as the leader
+            set_result = redis_client.set('leader_id', instance_id, nx=True, ex=60)
+            if set_result:
+                # Successfully set this instance as the leader
+                return True
+            else:
+                # Failed to set this instance as the leader, likely due to a race condition
+                return False
+        elif instance_id == current_leader_id:
+            # This instance is already the leader
+            return True
+        else:
+            # There is a leader with a higher PID
+            return False
 
 @shared_task(
     bind=True,
@@ -19,23 +41,27 @@ redlock = Redlock([
     retry_backoff=True,
     retry_backoff_max=60
 )
-
 def run_sync_databases(self):
+    if not is_leader():
+        logger.info(f'Instance {instance_id} is not the leader. Skipping synchronization.')
+        return
+
     lock_id = 'sync_databases_lock'
     lock_ttl = 300000  # Lock TTL in milliseconds (5 minutes)
     have_lock = False
     sync_completed = threading.Event()
+    heartbeat_thread = None
 
     try:
-        lock = redlock.lock(lock_id, lock_ttl)
-        if lock:
+        # Since this instance is the leader, attempt to acquire the lock
+        if redis_client.set(lock_id, instance_id, nx=True, px=lock_ttl):
             have_lock = True
-            logger.info('Acquired lock. Running synchronization...')
+            logger.info(f'Instance {instance_id} acquired lock. Running synchronization...')
 
             def heartbeat():
                 while not sync_completed.is_set():
                     try:
-                        redlock.extend(lock, additional_time=45000)  # Extend the lock by 45 seconds (in milliseconds)
+                        redis_client.pexpire(lock_id, lock_ttl)  # Refresh the lock TTL
                     except Exception as e:
                         logger.error(f'Error extending lock: {e}')
                         break
@@ -48,13 +74,14 @@ def run_sync_databases(self):
             sync_completed.set()  # Signal that synchronization is completed
             logger.info('Synchronization completed.')
         else:
-            logger.info('Failed to acquire lock. Skipping synchronization.')
+            logger.info(f'Instance {instance_id} failed to acquire lock. Skipping synchronization.')
     except Exception as e:
-        logger.error(f'Error acquiring lock: {e}')
+        logger.error(f'Error in synchronization: {e}')
         raise self.retry(exc=e)
     finally:
         if have_lock:
-            redlock.unlock(lock)
+            redis_client.delete(lock_id)
             have_lock = False
             sync_completed.set()  # Signal that synchronization is completed (in case of an exception)
+        if heartbeat_thread and heartbeat_thread.is_alive():
             heartbeat_thread.join()  # Wait for the heartbeat thread to finish
