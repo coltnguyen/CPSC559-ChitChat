@@ -7,7 +7,7 @@ from .management.commands.sync_databases import run_synchronization
 import os
 
 logger = get_task_logger(__name__)
-redis_client = Redis(host='192.168.50.152', port=6379, db=0)
+redis_client = Redis(host='10.13.99.107', port=6379, db=0)
 
 instance_id = os.getpid()  # Use worker PID as the instance ID
 
