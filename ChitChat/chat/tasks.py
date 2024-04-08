@@ -12,6 +12,16 @@ redis_client = Redis(host='10.13.117.186', port=6379, db=0)
 instance_id = os.getpid()  # Use worker PID as the instance ID
 
 def is_leader():
+    """
+    Determines if the current instance is the leader among the Celery workers.
+
+    The leader is determined based on the instance ID (PID) stored in Redis.
+    If there is no current leader, the current instance becomes the leader.
+    If the current instance has a higher PID than the current leader, it attempts to become the leader.
+
+    Returns:
+        bool: True if the current instance is the leader, False otherwise.
+    """
     current_leader_id = redis_client.get('leader_id')
     if current_leader_id is None:
         # If there's no leader, declare this instance as the leader
@@ -42,6 +52,22 @@ def is_leader():
     retry_backoff_max=60
 )
 def run_sync_databases(self):
+    """
+    Celery task to synchronize databases.
+
+    This task is executed by the leader instance among the Celery workers.
+    It acquires a distributed lock using Redis to ensure that only one instance runs the synchronization at a time.
+    The lock is acquired with a TTL (Time-To-Live) of 5 minutes.
+    A heartbeat thread is started to periodically refresh the lock TTL while the synchronization is in progress.
+
+    If the lock is successfully acquired, the synchronization is performed by calling the `run_synchronization` function.
+    If the lock cannot be acquired, the synchronization is skipped.
+
+    In case of any errors during the synchronization, the task is retried up to 3 times with exponential backoff.
+
+    Returns:
+        None
+    """
     if not is_leader():
         logger.info(f'Instance {instance_id} is not the leader. Skipping synchronization.')
         return

@@ -2,47 +2,56 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 
 
+class ChatConsumer(AsyncWebsocketConsumer):
+    """
+    WebSocket consumer for handling chat functionality.
+    """
 
-class chatConsumer(AsyncWebsocketConsumer):
-    # Handles new WebSocket connections
     async def connect(self):
+        """
+        Called when a new WebSocket connection is established.
+        """
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = 'chat_%s' % self.room_name
 
-        # Join room group
+        # Join the room group
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
         )
 
+        # Accept the WebSocket connection
         await self.accept()
-        # # Send a welcome message when a user connects
-        # await self.send(text_data=json.dumps({'message': 'Welcome to the chat!'}))
 
-
-    # Handles disconnection
     async def disconnect(self, close_code):
-        # Leave room group
+        """
+        Called when a WebSocket connection is closed.
+        """
+        # Leave the room group
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
         )
 
-
     async def receive(self, text_data):
+        """
+        Called when a message is received from the WebSocket.
+        """
         try:
             message = json.loads(text_data)
             username = message['username']
             text = message['text']
             timestamp = message['timestamp']
         except json.JSONDecodeError:
-            # TODO Send some sort of error msg
+            # Handle invalid JSON format
+            # TODO: Send an error message to the client
             return
         except KeyError:
-            # TODO Send some sort of error msg
+            # Handle missing required fields in the message
+            # TODO: Send an error message to the client
             return
 
-        # Broadcast the received message to all clients
+        # Broadcast the received message to all clients in the room
         await self.channel_layer.group_send(
             self.room_group_name,
             {
@@ -54,8 +63,16 @@ class chatConsumer(AsyncWebsocketConsumer):
         )
 
     async def chat_message(self, event):
+        """
+        Called when a chat message event is received from the room group.
+        """
         username = event['username']
         text = event['text']
         timestamp = event['timestamp']
+
         # Send the message to the connected client
-        await self.send(json.dumps({'username': username, 'text':text, 'timestamp':timestamp}))
+        await self.send(json.dumps({
+            'username': username,
+            'text': text,
+            'timestamp': timestamp
+        }))
