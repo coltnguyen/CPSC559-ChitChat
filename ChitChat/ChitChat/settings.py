@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+from celery.schedules import crontab
 
 import os
 
@@ -25,8 +26,21 @@ SECRET_KEY = 'django-insecure-82^qc9ol+p)+=9bjo%)6h5_5b8n-0%+57od+c2xe+%*jf!+gzh
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.50.152', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['192.168.50.152', 'localhost', '127.0.0.1', '0.0.0.0', '10.13.151.7', '10.13.98.110', '10.13.98.39', '10.13.117.186']
 
+# Celery configuration
+CELERY_BROKER_URL = 'redis://10.13.117.186:6379/0'  # Redis broker URL
+CELERY_RESULT_BACKEND = 'redis://10.13.117.186:6379/1'  # Redis backend URL
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+CELERY_BEAT_SCHEDULE = {
+    'sync_databases_every_5_minutes': {
+        'task': 'chat.tasks.run_sync_databases',
+        'schedule': crontab(minute='*/1'),  # Run every 5 minutes
+    },
+}
 
 # Application definition
 
@@ -41,6 +55,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'channels',
+    'celery',
 ]
 
 # Channels
@@ -119,6 +134,16 @@ DATABASES = {
 
 # Path to our router class
 DATABASE_ROUTERS = ['chat.routers.ReplicaRouter']
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://10.13.117.186:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
