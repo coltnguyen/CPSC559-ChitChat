@@ -25,8 +25,6 @@ ChitChat is a Django-based web application that provides a real-time chat functi
   - `chat/tasks.py`: Celery tasks for background jobs (database synchronization)
   - `chat/management/commands/sync_databases.py`: Command for synchronizing databases
   - `chat/routers.py`: Database router for read/write operations
-  - `chat/templates/`: HTML templates for rendering views
-  - `chat/static/`: Static files (CSS, JavaScript)
 
 ## Installation
 
