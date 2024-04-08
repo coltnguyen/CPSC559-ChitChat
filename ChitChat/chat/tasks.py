@@ -19,6 +19,7 @@ redlock = Redlock([
     retry_backoff=True,
     retry_backoff_max=60
 )
+
 def run_sync_databases(self):
     lock_id = 'sync_databases_lock'
     lock_ttl = 300000  # Lock TTL in milliseconds (5 minutes)

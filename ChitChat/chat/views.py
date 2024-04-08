@@ -89,7 +89,7 @@ def registerUser(request):
 @retry_on_failure(attempts=3, delay=1, exceptions=(Exception,))
 def allMessages(request):
     try:
-        messages = Message.objects.filter(chatroomId = request.data.get('chatroomId'))
+        messages = Message.objects.filter(chatroomId = request.data.get('chatroomId')).order_by('date')
         serializer = MessageSerializer(messages, many=True)
         # If the messages are found, return a success response
         return JsonResponse(serializer.data, status=status.HTTP_200_OK, safe=False)
