@@ -30,7 +30,13 @@ ChitChat is a Django-based web application that provides a real-time chat functi
 
 ## Installation
 
-Navigate to ChitChat main directory and run
+Clone the repo:
+`git clone https://github.com/coltnguyen/CPSC559-ChitChat.git`
+
+Navigate to ChitChat main directory:
+`cd ChitChat`
+
+To install requirements, run:
 `pip install -r requirements.txt`
 
 ### Step 1: Initialize Redis
